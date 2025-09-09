@@ -53,7 +53,7 @@ public class PlacedObjectTypeSO : ScriptableObject {
     public Transform visual;
     public int width;
     public int height;
-
+    public List<Vector2Int> shape = new List<Vector2Int>();
 
     public int GetRotationAngle(Dir dir) {
         switch (dir) {
@@ -81,16 +81,28 @@ public class PlacedObjectTypeSO : ScriptableObject {
             default:
             case Dir.Down:
             case Dir.Up:
-                for (int x = 0; x < width; x++) {
-                    for (int y = 0; y < height; y++) {
+                //foreach (Vector2Int gridPosition in shape)
+                //{
+                //    gridPositionList.Add(offset + gridPosition);
+                //}
+                for (int x = 0; x < width; x++)
+                {
+                    for (int y = 0; y < height; y++)
+                    {
                         gridPositionList.Add(offset + new Vector2Int(x, y));
                     }
                 }
                 break;
             case Dir.Left:
             case Dir.Right:
-                for (int x = 0; x < height; x++) {
-                    for (int y = 0; y < width; y++) {
+                //foreach (Vector2Int gridPosition in shape)
+                //{
+                //    gridPositionList.Add(offset + gridPosition);
+                //}
+                for (int x = 0; x < height; x++)
+                {
+                    for (int y = 0; y < width; y++)
+                    {
                         gridPositionList.Add(offset + new Vector2Int(x, y));
                     }
                 }

@@ -12,16 +12,16 @@ public class InventoryTetris : MonoBehaviour {
     public event EventHandler<PlacedObject> OnObjectPlaced;
 
     private Grid<GridObject> grid;
+    private Grid<GridObject> grid2;
+
     private RectTransform itemContainer;
 
-
+    [SerializeField] private MainGameSO _MainGameSO;
     private void Awake() {
         Instance = this;
 
-        int gridWidth = 10;
-        int gridHeight = 10;
-        float cellSize = 50f;
-        grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize, new Vector3(0, 0, 0), (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
+       
+        grid = new Grid<GridObject>(_MainGameSO.gridWidth, _MainGameSO.gridHeight, _MainGameSO.cellSize, new Vector3(0, 0, 0), (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
 
         itemContainer = transform.Find("ItemContainer").GetComponent<RectTransform>();
 
@@ -73,7 +73,10 @@ public class InventoryTetris : MonoBehaviour {
     public Grid<GridObject> GetGrid() {
         return grid;
     }
-
+    public Grid<GridObject> GetGrid2()
+    {
+        return grid2;
+    }
     public Vector2Int GetGridPosition(Vector3 worldPosition) {
         grid.GetXY(worldPosition, out int x, out int z);
         return new Vector2Int(x, z);
@@ -88,6 +91,7 @@ public class InventoryTetris : MonoBehaviour {
         // Test Can Build
         List<Vector2Int> gridPositionList = itemTetrisSO.GetGridPositionList(placedObjectOrigin, dir);
         bool canPlace = true;
+        Debug.Assert(gridPositionList != null);
         foreach (Vector2Int gridPosition in gridPositionList) {
             bool isValidPosition = grid.IsValidGridPosition(gridPosition);
             if (!isValidPosition) {
@@ -177,6 +181,8 @@ public class InventoryTetris : MonoBehaviour {
         }
 
         List<AddItemTetris> addItemTetrisList = new List<AddItemTetris>();
+        Debug.Log("Save");
+
         foreach (PlacedObject placedObject in placedObjectList) {
             addItemTetrisList.Add(new AddItemTetris {
                 dir = placedObject.GetDir(),
@@ -193,6 +199,7 @@ public class InventoryTetris : MonoBehaviour {
         ListAddItemTetris listAddItemTetris = JsonUtility.FromJson<ListAddItemTetris>(loadString);
 
         foreach (AddItemTetris addItemTetris in listAddItemTetris.addItemTetrisList) {
+            Debug.Log("Load: " + addItemTetris.itemTetrisSOName + " " + addItemTetris.gridPosition + " " + addItemTetris.dir);
             TryPlaceItem(InventoryTetrisAssets.Instance.GetItemTetrisSOFromName(addItemTetris.itemTetrisSOName), addItemTetris.gridPosition, addItemTetris.dir);
         }
     }

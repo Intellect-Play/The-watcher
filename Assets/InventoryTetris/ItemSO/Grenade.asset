@@ -15,5 +15,10 @@ MonoBehaviour:
   nameString: Grenade
   prefab: {fileID: 5355243795728677712, guid: 57afcdf98b4d316439569aefce24daca, type: 3}
   visual: {fileID: 2148587555689196983, guid: 6d6a9393db03af7489ce3dcdd356773d, type: 3}
-  width: 1
-  height: 2
+  width: 2
+  height: 3
+  shape:
+  - {x: 0, y: 2}
+  - {x: 0, y: 1}
+  - {x: 0, y: 0}
+  - {x: 1, y: 0}

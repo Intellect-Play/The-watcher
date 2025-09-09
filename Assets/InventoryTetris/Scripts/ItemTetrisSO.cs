@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,7 +21,12 @@ public class ItemTetrisSO : PlacedObjectTypeSO {
                 backgroundSingleTransform.gameObject.SetActive(true);
             }
         }
-
+        Debug.Log("CreateVisualGrid: " + itemTetrisSO.shape.Count + ", " + itemTetrisSO.height);
+        //for (int x = 0; x < itemTetrisSO.shape.Count; x++)
+        //{
+        //    Transform backgroundSingleTransform = Instantiate(template, visualTransform);
+        //    backgroundSingleTransform.gameObject.SetActive(true);
+        //}
         visualTransform.GetComponent<GridLayoutGroup>().cellSize = Vector2.one * cellSize;
 
         visualTransform.GetComponent<RectTransform>().sizeDelta = new Vector2(itemTetrisSO.width, itemTetrisSO.height) * cellSize;
