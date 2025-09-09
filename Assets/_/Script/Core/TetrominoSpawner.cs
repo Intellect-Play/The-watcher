@@ -6,6 +6,7 @@ public class TetrominoSpawner : MonoBehaviour
     public TetrominoSO[] tetrominoCatalog;
     public GameObject tetrominoPrefab; // must have TetrominoInstance + DragController
 
+    public Transform tetrominoParent;
     readonly System.Collections.Generic.List<TetrominoInstance> _rack = new System.Collections.Generic.List<TetrominoInstance>();
 
     public void ClearRack()
@@ -20,7 +21,7 @@ public class TetrominoSpawner : MonoBehaviour
         for (int i = 0; i < settings.rackCount; i++)
         {
             var so = tetrominoCatalog[Random.Range(0, tetrominoCatalog.Length)];
-            var go = Instantiate(tetrominoPrefab);
+            var go = Instantiate(tetrominoPrefab, tetrominoParent);
             go.transform.position = new Vector3(settings.rackStart.x + i * settings.rackSpacing, settings.rackStart.y, 0);
 
             var ti = go.GetComponent<TetrominoInstance>();

@@ -66,6 +66,7 @@ public class TetrominoInstance : MonoBehaviour
 
     public bool CanPlaceAt(GridManager2D grid, Vector2Int origin)
     {
+        //Debug.Log($"Checking placement of piece {Shape.tetrominoId} at {origin.x},{origin.y}");
         _occupiedCells.Clear();
         foreach (var cell in grid.GetCoveredCells(origin, this))
         {
@@ -87,8 +88,8 @@ public class TetrominoInstance : MonoBehaviour
 
     public bool TryPlace(GridManager2D grid, Vector2Int origin)
     {
+        Debug.Log($"Trying to place piece {Shape.tetrominoId} at {origin.x},{origin.y}");   
         if (!CanPlaceAt(grid, origin)) return false;
-
         // Check if this exactly overlaps an existing piece of same type & level (for merge)
         bool isMerge = true;
         TetrominoInstance targetPiece = null;

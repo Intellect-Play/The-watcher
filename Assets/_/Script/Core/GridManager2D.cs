@@ -6,7 +6,8 @@ public class GridManager2D : MonoBehaviour
     public GameSettingsSO settings;
     public GameObject gridCellPrefab; // must have GridCell + BoxCollider2D
     public GameObject weaponTilePrefab; // must have WeaponTile
-
+    public Transform gridParent;
+    public Transform weaponParent;
     public GridCell[,] Cells { get; private set; }
 
     readonly List<WeaponTile> _weapons = new List<WeaponTile>();
@@ -34,7 +35,7 @@ public class GridManager2D : MonoBehaviour
         for (int y = 0; y < settings.gridRows; y++)
             for (int x = 0; x < settings.gridCols; x++)
             {
-                var go = Instantiate(gridCellPrefab, CellToWorld(new Vector2Int(x, y)), Quaternion.identity, transform);
+                var go = Instantiate(gridCellPrefab, CellToWorld(new Vector2Int(x, y)), Quaternion.identity, gridParent);
                 go.name = $"Cell_{x}_{y}";
                 var cell = go.GetComponent<GridCell>();
                 cell.Init(new Vector2Int(x, y));
@@ -48,7 +49,7 @@ public class GridManager2D : MonoBehaviour
         for (int y = 0; y < settings.gridRows; y++)
             for (int x = 0; x < settings.gridCols; x++)
             {
-                var wgo = Instantiate(weaponTilePrefab, Cells[x, y].transform.position, Quaternion.identity, transform);
+                var wgo = Instantiate(weaponTilePrefab, Cells[x, y].transform.position, Quaternion.identity, weaponParent);
                 var weapon = wgo.GetComponent<WeaponTile>();
                 weapon.RandomizeSO();
                 Cells[x, y].SetWeapon(weapon);

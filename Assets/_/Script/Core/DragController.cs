@@ -46,6 +46,7 @@ public class DragController : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         Vector2Int origin = WorldToCellOrigin(world);
         if (_piece.TryPlace(grid, origin))
         {
+            Debug.Log($"Placed at {origin.x},{origin.y}");
             // Snap transform to exact position
             transform.position = grid.CellToWorld(origin) + new Vector3(0, 0, 0);
         }

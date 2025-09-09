@@ -5,6 +5,8 @@ using UnityEngine;
 public class BuildingGhost2D : MonoBehaviour {
 
     private Transform visual;
+    public Transform visualParent;
+
     private PlacedObjectTypeSO placedObjectTypeSO;
 
     private void Start() {
