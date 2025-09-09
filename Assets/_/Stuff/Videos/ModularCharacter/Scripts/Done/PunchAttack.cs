@@ -10,6 +10,7 @@
     --------------------------------------------------
  */
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,13 +47,13 @@ public class PunchAttack : MonoBehaviour, IAttack {
         GetComponent<IMoveVelocity>().Enable();
     }
 
-    public void Attack() {
+    public void Attack(Vector3 attackDir, Action onAttackComplete) {
         // Attack
         SetStateAttacking();
             
-        Vector3 attackDir = (UtilsClass.GetMouseWorldPosition() - GetPosition()).normalized;
+        //Vector3 attackDir = (UtilsClass.GetMouseWorldPosition() - GetPosition()).normalized;
 
-        characterBase.PlayAttackAnimation(attackDir, SetStateNormal);
+        characterBase.PlayAttackAnimation(attackDir, () => { SetStateNormal(); onAttackComplete(); });
     }
 
     private Vector3 GetPosition() {

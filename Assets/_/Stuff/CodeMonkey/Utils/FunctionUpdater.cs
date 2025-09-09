@@ -50,15 +50,23 @@ namespace CodeMonkey.Utils {
         public static FunctionUpdater Create(Action updateFunc) {
             return Create(() => { updateFunc(); return false; }, "", true, false);
         }
+
+        public static FunctionUpdater Create(Action updateFunc, string functionName) {
+            return Create(() => { updateFunc(); return false; }, functionName, true, false);
+        }
+
         public static FunctionUpdater Create(Func<bool> updateFunc) {
             return Create(updateFunc, "", true, false);
         }
+
         public static FunctionUpdater Create(Func<bool> updateFunc, string functionName) {
             return Create(updateFunc, functionName, true, false);
         }
+
         public static FunctionUpdater Create(Func<bool> updateFunc, string functionName, bool active) {
             return Create(updateFunc, functionName, active, false);
         }
+
         public static FunctionUpdater Create(Func<bool> updateFunc, string functionName, bool active, bool stopAllWithSameName) {
             InitIfNeeded();
 
@@ -73,16 +81,19 @@ namespace CodeMonkey.Utils {
             updaterList.Add(functionUpdater);
             return functionUpdater;
         }
+
         private static void RemoveUpdater(FunctionUpdater funcUpdater) {
             InitIfNeeded();
             updaterList.Remove(funcUpdater);
         }
+
         public static void DestroyUpdater(FunctionUpdater funcUpdater) {
             InitIfNeeded();
             if (funcUpdater != null) {
                 funcUpdater.DestroySelf();
             }
         }
+
         public static void StopUpdaterWithName(string functionName) {
             InitIfNeeded();
             for (int i = 0; i < updaterList.Count; i++) {
@@ -92,6 +103,7 @@ namespace CodeMonkey.Utils {
                 }
             }
         }
+
         public static void StopAllUpdatersWithName(string functionName) {
             InitIfNeeded();
             for (int i = 0; i < updaterList.Count; i++) {
@@ -117,9 +129,11 @@ namespace CodeMonkey.Utils {
             this.functionName = functionName;
             this.active = active;
         }
+
         public void Pause() {
             active = false;
         }
+
         public void Resume() {
             active = true;
         }
@@ -130,11 +144,14 @@ namespace CodeMonkey.Utils {
                 DestroySelf();
             }
         }
+
         public void DestroySelf() {
             RemoveUpdater(this);
             if (gameObject != null) {
                 UnityEngine.Object.Destroy(gameObject);
             }
         }
+
     }
+
 }

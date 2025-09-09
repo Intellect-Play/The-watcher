@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CodeMonkey.Utils;
+using CodeMonkey.InventorySystem;
 
 public class UnitRTS : MonoBehaviour {
+
+    [SerializeField] private LayerMask wallLayermask = default(LayerMask);
 
     private Character_Base characterBase;
     private GameObject selectedGameObject;
@@ -28,23 +31,31 @@ public class UnitRTS : MonoBehaviour {
         switch (state) {
             case State.Normal:
                 if (enemyRTS != null) {
-                    float attackRange = 70f;
+                    float attackRange = 50f;
                     if (Vector3.Distance(transform.position, enemyRTS.GetPosition()) < attackRange) {
-                        MoveTo(transform.position);
-                        GetComponent<IMoveVelocity>().Disable();
-                        Vector3 attackDir = (enemyRTS.GetPosition() - transform.position).normalized;
-                        UtilsClass.ShakeCamera(.6f, .1f);
+                        Vector3 dirToEnemy = (enemyRTS.GetPosition() - GetPosition()).normalized;
+                        if (!Physics2D.Raycast(GetPosition(), dirToEnemy, Vector3.Distance(GetPosition(), enemyRTS.GetPosition()), wallLayermask)) {
+                            MoveTo(transform.position);
+                            GetComponent<IMoveVelocity>().Disable();
+                            Vector3 attackDir = (enemyRTS.GetPosition() - transform.position).normalized;
+                            UtilsClass.ShakeCamera(.6f, .1f);
+                            CinemachineShake.ScreenShake_Static(20f, .1f);
 
-                        characterBase.PlayShootAnimation(attackDir, (Vector3 vec) => {
-                            Shoot_Flash.AddFlash(vec);
-                            WeaponTracer.Create(vec, enemyRTS.GetPosition());
-                            enemyRTS.Damage(this, Random.Range(5, 15));
-                        }, () => {
-                            characterBase.PlayIdleAnim();
-                            GetComponent<IMoveVelocity>().Enable();
-                            state = State.Normal;
-                        });
-                        state = State.Attacking;
+                            characterBase.PlayShootAnimation(attackDir, (Vector3 vec) => {
+                                if (enemyRTS == null) return;
+                                Shoot_Flash.AddFlash(vec);
+                                WeaponTracer.Create(vec, enemyRTS.GetPosition());
+                                enemyRTS.Damage(this, Random.Range(5, 15));
+                            }, () => {
+                                characterBase.PlayIdleAnim();
+                                GetComponent<IMoveVelocity>().Enable();
+                                state = State.Normal;
+                            });
+                            state = State.Attacking;
+                        } else {
+                            // Something blocking path, move closer
+                            MoveTo(enemyRTS.GetPosition());
+                        }
                     } else {
                         // Move Closer
                         MoveTo(enemyRTS.GetPosition());

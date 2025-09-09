@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CodeMonkey.Utils;
+using CodeMonkey.TooltipUICamera;
 
 public class UI_SkillTree : MonoBehaviour {
 

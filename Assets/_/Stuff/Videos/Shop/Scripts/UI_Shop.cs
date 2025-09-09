@@ -16,6 +16,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CodeMonkey.Utils;
+using CodeMonkey.InventorySystem;
+using CodeMonkey.TooltipUICamera;
 
 public class UI_Shop : MonoBehaviour {
 

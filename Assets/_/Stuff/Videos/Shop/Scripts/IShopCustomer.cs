@@ -13,6 +13,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CodeMonkey.InventorySystem;
 
 public interface IShopCustomer {
 

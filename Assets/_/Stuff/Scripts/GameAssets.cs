@@ -60,7 +60,8 @@ public class GameAssets : MonoBehaviour {
 
 
 
-    
+
+
     public static class UnitAnimTypeEnum {
 
         static UnitAnimTypeEnum() {

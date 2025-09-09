@@ -44,13 +44,15 @@ public class GridXZ<TGridObject> {
             }
         }
 
-        bool showDebug = true;
+        bool showDebug = false;
         if (showDebug) {
             TextMesh[,] debugTextArray = new TextMesh[width, height];
 
             for (int x = 0; x < gridArray.GetLength(0); x++) {
                 for (int z = 0; z < gridArray.GetLength(1); z++) {
-                    debugTextArray[x, z] = UtilsClass.CreateWorldText(gridArray[x, z]?.ToString(), null, GetWorldPosition(x, z) + new Vector3(cellSize, 0, cellSize) * .5f, 15, Color.white, TextAnchor.MiddleCenter, TextAlignment.Center);
+                    debugTextArray[x, z] = UtilsClass.CreateWorldText(gridArray[x, z]?.ToString(), null, GetWorldPosition(x, z) + new Vector3(cellSize, 0, cellSize) * .5f, 12, Color.white, TextAnchor.MiddleCenter, TextAlignment.Center);
+                    debugTextArray[x, z].transform.localScale = Vector3.one * .13f;
+                    debugTextArray[x, z].transform.eulerAngles = new Vector3(90, 0, 0);
                     Debug.DrawLine(GetWorldPosition(x, z), GetWorldPosition(x, z + 1), Color.white, 100f);
                     Debug.DrawLine(GetWorldPosition(x, z), GetWorldPosition(x + 1, z), Color.white, 100f);
                 }
@@ -120,6 +122,29 @@ public class GridXZ<TGridObject> {
             Mathf.Clamp(gridPosition.x, 0, width - 1),
             Mathf.Clamp(gridPosition.y, 0, height - 1)
         );
+    }
+
+    public bool IsValidGridPosition(Vector2Int gridPosition) {
+        int x = gridPosition.x;
+        int z = gridPosition.y;
+
+        if (x >= 0 && z >= 0 && x < width && z < height) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public bool IsValidGridPositionWithPadding(Vector2Int gridPosition) {
+        Vector2Int padding = new Vector2Int(2, 2);
+        int x = gridPosition.x;
+        int z = gridPosition.y;
+
+        if (x >= padding.x && z >= padding.y && x < width - padding.x && z < height - padding.y) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

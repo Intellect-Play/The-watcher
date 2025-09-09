@@ -45,6 +45,7 @@ public class PlayerAim3D : MonoBehaviour, Enemy.IEnemyTargetable, EnemyHandler.I
 
     private void PlayerBase_OnShoot(object sender, CharacterAim_Base.OnShootEventArgs e) {
         Vector3 shootDir = (e.shootPosition - e.gunEndPointPosition).normalized;
+        BulletRaycast3D.Shoot(e.gunEndPointPosition, shootDir);
 
         Shoot_Flash.AddFlash(e.gunEndPointPosition, new Vector3(3, 2.7f));
         Vector3 mouseWorldPosition = Mouse3D.GetMouseWorldPosition();

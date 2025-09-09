@@ -146,11 +146,20 @@ namespace CodeMonkey.Utils {
             this.useUnscaledDeltaTime = useUnscaledDeltaTime;
             baseTimer = timer;
         }
+
         public void SkipTimerTo(float timer) {
             this.timer = timer;
         }
 
-        void Update() {
+        public void SetBaseTimer(float baseTimer) {
+            this.baseTimer = baseTimer;
+        }
+
+        public float GetBaseTimer() {
+            return baseTimer;
+        }
+
+        private void Update() {
             if (useUnscaledDeltaTime) {
                 timer -= Time.unscaledDeltaTime;
             } else {
@@ -167,6 +176,7 @@ namespace CodeMonkey.Utils {
                 }
             }
         }
+
         public void DestroySelf() {
             RemoveTimer(this);
             if (gameObject != null) {

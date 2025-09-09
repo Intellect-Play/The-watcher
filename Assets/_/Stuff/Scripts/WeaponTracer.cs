@@ -40,7 +40,7 @@ public class WeaponTracer {
     public static void Create3D(Vector3 fromPosition, Vector3 targetPosition) {
         Vector3 shootDir = (targetPosition - fromPosition).normalized;
         float distance = Vector3.Distance(fromPosition, targetPosition);
-        float shootAngle = UtilsClass.GetAngleFromVectorFloat3D(shootDir);
+        float shootAngle = UtilsClass.GetAngleFromVectorFloatXZ(shootDir);
         Vector3 spawnTracerPosition = fromPosition + shootDir * distance * .5f;
         Material tracerMaterial = new Material(GameAssets.i.m_WeaponTracer);
         //tracerMaterial.SetTextureScale("_MainTex", new Vector2(1f, distance / 256f));

@@ -15,6 +15,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CodeMonkey.Utils;
+using CodeMonkey.InventorySystem;
 
 public class PlayerShop : MonoBehaviour, Enemy.IEnemyTargetable, IShopCustomer {
 

@@ -61,7 +61,7 @@ Material:
     - _DissolveColor: {r: 3.9999995, g: 0.39790574, b: 0, a: 1}
     - _Tint: {r: 0.1450982, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
---- !u!114 &4467443204555357442
+--- !u!114 &4918251302972263280
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

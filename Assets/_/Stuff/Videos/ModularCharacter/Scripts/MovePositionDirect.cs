@@ -35,6 +35,7 @@ public class MovePositionDirect : MonoBehaviour, IMovePosition {
                 // Reached target position
                 moveDir = Vector3.zero;
                 isMovingToPosition = false;
+                onReachedMovePosition();
             }
             GetComponent<IMoveVelocity>().SetVelocity(moveDir);
         } else {

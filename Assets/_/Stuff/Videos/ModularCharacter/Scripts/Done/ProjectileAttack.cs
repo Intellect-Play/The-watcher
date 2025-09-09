@@ -10,6 +10,7 @@
     --------------------------------------------------
  */
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,16 +47,16 @@ public class ProjectileAttack : MonoBehaviour, IAttack {
         GetComponent<IMoveVelocity>().Enable();
     }
 
-    public void Attack() {
+    public void Attack(Vector3 attackDir, Action onAttackComplete) {
         // Attack
-        Vector3 boltShootDir = (UtilsClass.GetMouseWorldPosition() - transform.position).normalized;
+        Vector3 boltShootDir = attackDir;// (UtilsClass.GetMouseWorldPosition() - transform.position).normalized;
         float boltOffset = 10f;
         Vector3 boltSpawnPosition = transform.position + boltShootDir * boltOffset;
         ProjectileBolt.Create(boltSpawnPosition, boltShootDir);
 
         SetStateAttacking();
             
-        Vector3 attackDir = boltShootDir;
+        //Vector3 attackDir = boltShootDir;
 
         Transform swordSlashTransform = Instantiate(GameAssets.i.pfSwordSlash, GetPosition() + attackDir * 13f, Quaternion.Euler(0, 0, UtilsClass.GetAngleFromVector(attackDir)));
         swordSlashTransform.GetComponent<SpriteAnimator>().onLoop = () => Destroy(swordSlashTransform.gameObject);
@@ -63,9 +64,9 @@ public class ProjectileAttack : MonoBehaviour, IAttack {
         UnitAnimType activeAnimType = characterBase.GetUnitAnimation().GetActiveAnimType();
         if (activeAnimType == GameAssets.UnitAnimTypeEnum.dSwordTwoHandedBack_Sword) {
             swordSlashTransform.localScale = new Vector3(swordSlashTransform.localScale.x, swordSlashTransform.localScale.y * -1, swordSlashTransform.localScale.z);
-            characterBase.GetUnitAnimation().PlayAnimForced(GameAssets.UnitAnimTypeEnum.dSwordTwoHandedBack_Sword2, attackDir, 1f, (UnitAnim unitAnim) => SetStateNormal(), null, null);
+            characterBase.GetUnitAnimation().PlayAnimForced(GameAssets.UnitAnimTypeEnum.dSwordTwoHandedBack_Sword2, attackDir, 1f, (UnitAnim unitAnim) => { SetStateNormal(); onAttackComplete(); }, null, null);
         } else {
-            characterBase.GetUnitAnimation().PlayAnimForced(GameAssets.UnitAnimTypeEnum.dSwordTwoHandedBack_Sword, attackDir, 1f, (UnitAnim unitAnim) => SetStateNormal(), null, null);
+            characterBase.GetUnitAnimation().PlayAnimForced(GameAssets.UnitAnimTypeEnum.dSwordTwoHandedBack_Sword, attackDir, 1f, (UnitAnim unitAnim) => { SetStateNormal(); onAttackComplete(); }, null, null);
         }
     }
 

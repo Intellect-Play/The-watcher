@@ -76,6 +76,7 @@ namespace CodeMonkey.Utils {
                 UtilsClass.DrawTextUI(tmp, transform, new Vector2(textPosition,0), fontSize, font);
             }
         }
+
         private void SetupParent(Transform parent, Vector2 anchoredPosition) {
             gameObject = new GameObject("UI_TextComplex", typeof(RectTransform));
             transform = gameObject.transform;
@@ -87,6 +88,7 @@ namespace CodeMonkey.Utils {
             rectTransform.pivot = new Vector2(0, .5f);
             rectTransform.anchoredPosition = anchoredPosition;
         }
+
         public void SetTextColor(Color color) {
             foreach (Transform trans in transform) {
                 Text text = trans.GetComponent<Text>();
@@ -95,6 +97,7 @@ namespace CodeMonkey.Utils {
                 }
             }
         }
+
         public float GetTotalWidth() {
             float textPosition = 0f;
             foreach (Transform trans in transform) {
@@ -109,6 +112,7 @@ namespace CodeMonkey.Utils {
             }
             return textPosition;
         }
+
         public float GetTotalHeight() {
             foreach (Transform trans in transform) {
                 Text text = trans.GetComponent<Text>();
@@ -118,6 +122,7 @@ namespace CodeMonkey.Utils {
             }
             return 0f;
         }
+
         public void AddTextOutline(Color color, float size) {
             foreach (Transform textComplexTrans in transform) {
                 if (textComplexTrans.GetComponent<Text>() != null) {
@@ -127,15 +132,20 @@ namespace CodeMonkey.Utils {
                 }
             }
         }
+
         public void SetAnchorMiddle() {
             rectTransform.anchorMin = new Vector2(.5f, .5f);
             rectTransform.anchorMax = new Vector2(.5f, .5f);
         }
+
         public void CenterOnPosition(Vector2 position) {
             rectTransform.anchoredPosition = position + new Vector2(-GetTotalWidth() / 2f, 0);
         }
+
         public void DestroySelf() {
             Object.Destroy(gameObject);
         }
+
     }
+
 }

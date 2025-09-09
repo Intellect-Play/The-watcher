@@ -56,7 +56,7 @@ Material:
     - _DissolveColor: {r: 2.9960785, g: 2.9960785, b: 2.9960785, a: 1}
     - _OutlineColor: {r: 0.27074933, g: 1, b: 0, a: 1}
   m_BuildTextureStacks: []
---- !u!114 &3811356452030217749
+--- !u!114 &6776698481334233788
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

@@ -14,24 +14,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Testing_BattleSystem : MonoBehaviour {
+namespace CodeMonkey.BattleSystemVideo {
 
-    [SerializeField] private DoorAnims entryDoor = null;
-    [SerializeField] private DoorAnims exitDoor = null;
-    [SerializeField] private BattleSystem battleSystem = null;
+    public class Testing_BattleSystem : MonoBehaviour {
 
-    private void Start() {
-        battleSystem.OnBattleStarted += BattleSystem_OnBattleStarted;
-        battleSystem.OnBattleOver += BattleSystem_OnBattleOver;
+        [SerializeField] private DoorAnims entryDoor = null;
+        [SerializeField] private DoorAnims exitDoor = null;
+        [SerializeField] private BattleSystem battleSystem = null;
+
+        private void Start() {
+            battleSystem.OnBattleStarted += BattleSystem_OnBattleStarted;
+            battleSystem.OnBattleOver += BattleSystem_OnBattleOver;
+        }
+
+        private void BattleSystem_OnBattleOver(object sender, System.EventArgs e) {
+            exitDoor.OpenDoor();
+            exitDoor.SetColor(DoorAnims.ColorName.Green);
+        }
+
+        private void BattleSystem_OnBattleStarted(object sender, System.EventArgs e) {
+            entryDoor.CloseDoor();
+            entryDoor.SetColor(DoorAnims.ColorName.Red);
+        }
     }
 
-    private void BattleSystem_OnBattleOver(object sender, System.EventArgs e) {
-        exitDoor.OpenDoor();
-        exitDoor.SetColor(DoorAnims.ColorName.Green);
-    }
-
-    private void BattleSystem_OnBattleStarted(object sender, System.EventArgs e) {
-        entryDoor.CloseDoor();
-        entryDoor.SetColor(DoorAnims.ColorName.Red);
-    }
 }

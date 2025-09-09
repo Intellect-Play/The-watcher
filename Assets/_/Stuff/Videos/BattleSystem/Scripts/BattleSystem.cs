@@ -16,118 +16,122 @@ using System.Collections.Generic;
 using UnityEngine;
 using TopDownShooter;
 
-public class BattleSystem : MonoBehaviour {
+namespace CodeMonkey.BattleSystemVideo {
 
-    public event EventHandler OnBattleStarted;
-    public event EventHandler OnBattleOver;
+    public class BattleSystem : MonoBehaviour {
 
-    private enum State {
-        Idle,
-        Active,
-        BattleOver,
-    }
-    
-    [SerializeField] private CaptureOnTriggerEnter2D colliderTrigger = null;
-    [SerializeField] private Wave[] waveArray = null;
+        public event EventHandler OnBattleStarted;
+        public event EventHandler OnBattleOver;
 
-    private State state;
-
-    private void Awake() {
-        state = State.Idle;
-    }
-
-    private void Start() {
-        colliderTrigger.OnPlayerTriggerEnter2D += ColliderTrigger_OnPlayerEnterTrigger;
-    }
-
-    private void ColliderTrigger_OnPlayerEnterTrigger(object sender, System.EventArgs e) {
-        if (state == State.Idle) {
-            StartBattle();
-            colliderTrigger.OnPlayerTriggerEnter2D -= ColliderTrigger_OnPlayerEnterTrigger;
+        private enum State {
+            Idle,
+            Active,
+            BattleOver,
         }
-    }
 
-    private void StartBattle() {
-        Debug.Log("StartBattle");
-        state = State.Active;
-        OnBattleStarted?.Invoke(this, EventArgs.Empty);
-    }
+        [SerializeField] private CaptureOnTriggerEnter2D colliderTrigger = null;
+        [SerializeField] private Wave[] waveArray = null;
 
-    private void Update() {
-        switch (state) {
-        case State.Active:
-            foreach (Wave wave in waveArray) {
-                wave.Update();
-            }
+        private State state;
 
-            TestBattleOver();
-            break;
+        private void Awake() {
+            state = State.Idle;
         }
-    }
 
-    private void TestBattleOver() {
-        if (state == State.Active) {
-            if (AreWavesOver()) {
-                // Battle is over!
-                state = State.BattleOver;
-                Debug.Log("Battle Over!");
-                OnBattleOver?.Invoke(this, EventArgs.Empty);
-            }
+        private void Start() {
+            colliderTrigger.OnPlayerTriggerEnter2D += ColliderTrigger_OnPlayerEnterTrigger;
         }
-    }
-    
-    private bool AreWavesOver() {
-        foreach (Wave wave in waveArray) {
-            if (wave.IsWaveOver()) {
-                // Wave is over
-            } else {
-                // Wave not over
-                return false;
+
+        private void ColliderTrigger_OnPlayerEnterTrigger(object sender, System.EventArgs e) {
+            if (state == State.Idle) {
+                StartBattle();
+                colliderTrigger.OnPlayerTriggerEnter2D -= ColliderTrigger_OnPlayerEnterTrigger;
             }
         }
 
-        return true;
-    }
+        private void StartBattle() {
+            Debug.Log("StartBattle");
+            state = State.Active;
+            OnBattleStarted?.Invoke(this, EventArgs.Empty);
+        }
 
+        private void Update() {
+            switch (state) {
+                case State.Active:
+                    foreach (Wave wave in waveArray) {
+                        wave.Update();
+                    }
 
-    /*
-     * Represents a single Enemy Spawn Wave
-     * */
-    [System.Serializable]
-    private class Wave {
-        
-        [SerializeField] private EnemySpawn[] enemySpawnArray = null;
-        [SerializeField] private float timer = 1f;
+                    TestBattleOver();
+                    break;
+            }
+        }
 
-        public void Update() {
-            if (timer >= 0) {
-                timer -= Time.deltaTime;
-                if (timer < 0) {
-                    SpawnEnemies();
+        private void TestBattleOver() {
+            if (state == State.Active) {
+                if (AreWavesOver()) {
+                    // Battle is over!
+                    state = State.BattleOver;
+                    Debug.Log("Battle Over!");
+                    OnBattleOver?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
 
-        private void SpawnEnemies() {
-            foreach (EnemySpawn enemySpawn in enemySpawnArray) {
-                enemySpawn.Spawn();
+        private bool AreWavesOver() {
+            foreach (Wave wave in waveArray) {
+                if (wave.IsWaveOver()) {
+                    // Wave is over
+                } else {
+                    // Wave not over
+                    return false;
+                }
             }
+
+            return true;
         }
 
-        public bool IsWaveOver() {
-            if (timer < 0) {
-                // Wave spawned
-                foreach (EnemySpawn enemySpawn in enemySpawnArray) {
-                    if (enemySpawn.IsAlive()) {
-                        return false;
+
+        /*
+         * Represents a single Enemy Spawn Wave
+         * */
+        [System.Serializable]
+        private class Wave {
+
+            [SerializeField] private EnemySpawn[] enemySpawnArray = null;
+            [SerializeField] private float timer = 1f;
+
+            public void Update() {
+                if (timer >= 0) {
+                    timer -= Time.deltaTime;
+                    if (timer < 0) {
+                        SpawnEnemies();
                     }
                 }
-                return true;
-            } else {
-                // Enemies haven't spawned yet
-                return false;
+            }
+
+            private void SpawnEnemies() {
+                foreach (EnemySpawn enemySpawn in enemySpawnArray) {
+                    enemySpawn.Spawn();
+                }
+            }
+
+            public bool IsWaveOver() {
+                if (timer < 0) {
+                    // Wave spawned
+                    foreach (EnemySpawn enemySpawn in enemySpawnArray) {
+                        if (enemySpawn.IsAlive()) {
+                            return false;
+                        }
+                    }
+                    return true;
+                } else {
+                    // Enemies haven't spawned yet
+                    return false;
+                }
             }
         }
+
     }
 
 }
