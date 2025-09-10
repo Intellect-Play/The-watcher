@@ -14,7 +14,7 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] private List<InventorySlot> spawnSlots = new List<InventorySlot>();
 
     [Header("Weapons")]
-    [SerializeField] private List<WeaponSO> availableWeapons = new List<WeaponSO>();
+    [SerializeField] private List<GameObject> availableWeapons = new List<GameObject>();
 
     [Header("UI")]
     [SerializeField] private Button spawnButton;
@@ -58,10 +58,10 @@ public class InventoryManager : MonoBehaviour
             foreach (Transform c in slot.transform) Destroy(c.gameObject);
 
             // pick random
-            WeaponSO randomWeapon = availableWeapons[Random.Range(0, availableWeapons.Count)];
+            GameObject randomWeapon = availableWeapons[Random.Range(0, availableWeapons.Count)];
 
             // instantiate draggable prefab under the spawn slot
-            var go = Instantiate(draggablePrefab, slot.transform);
+            var go = Instantiate(randomWeapon, slot.transform);
             go.transform.localPosition = Vector3.zero;
 
             var drag = go.GetComponent<DraggableWeapon>();
@@ -73,13 +73,13 @@ public class InventoryManager : MonoBehaviour
                 Destroy(go);
                 continue;
             }
-
+            WeaponSO weaponData = randomWeapon.GetComponent<DraggableWeapon>()?.weaponData;
             // init both: this object is a spawn copy (not placed)
-            drag.Init(randomWeapon, slot);
-            placed.InitAsSpawn(randomWeapon);
+            drag.Init(weaponData, slot);
+            placed.InitAsSpawn(weaponData);
 
             // optionally set slot icon
-            slot.SetSlotIcon(randomWeapon != null ? randomWeapon.icon : null);
+            slot.SetSlotIcon(randomWeapon != null ? weaponData.icon : null);
         }
     }
 }

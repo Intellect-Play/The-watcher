@@ -12,7 +12,7 @@ public class GridInventory : MonoBehaviour
 
     // prefab used for creating placed result (set by InventoryManager on Awake)
     [HideInInspector] public GameObject placedPrefab;
-
+    public Transform placedWeaponsContainer; // bütün weapon-lar burada toplanacaq
     private void Awake()
     {
         grid = new PlacedWeapon[width, height];

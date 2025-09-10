@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,78 +12,71 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 
     // On drop we either place, merge, or reset dragged back to its original slot
     public void OnDrop(PointerEventData eventData)
-    {
-        var dragged = eventData.pointerDrag?.GetComponent<DraggableWeapon>();
-        Debug.Log("OnDrop called on slot " + gridPosition + " with dragged " + (dragged != null ? dragged.weaponData.name : "null"));
-        if (dragged == null || dragged.weaponData == null || inventory == null) return;
+{
+    var dragged = eventData.pointerDrag != null ? eventData.pointerDrag.GetComponent<DraggableWeapon>() : null;
+    if (dragged == null || dragged.weaponData == null || inventory == null) return;
+    //Debug.Log($"OnDrop called on slot {gridPosition} with weapon {dragged.weaponData.name}");
+    WeaponSO weapon = dragged.weaponData;
+    Vector2Int pos = gridPosition;
 
-        WeaponSO weapon = dragged.weaponData;
-        Vector2Int pos = gridPosition;
-        Debug.Log("Dropping " + weapon.name + " at " + pos);
-        // 1) Try merge (all shape cells are occupied by same weapon)
-        if (weapon.nextLevelWeapon != null && inventory.CanMergeAt(weapon, pos, out List<PlacedWeapon> placedList))
+        // 1) Merge
+        if (inventory.CanMergeAt(weapon, pos, out List<PlacedWeapon> placedList))
         {
-            Debug.Log("Merging " + weapon.name + " into " + weapon.nextLevelWeapon.name);
-            // remove unique placed objects (unregister from grid + destroy their GameObjects)
+            Debug.Log("Merging weapons into next level: " );
             foreach (var p in placedList)
             {
                 p.Unplace();
                 Destroy(p.gameObject);
             }
 
-            // destroy the dragged object (consumed in merge)
-            Destroy(dragged.gameObject);
+            //Destroy(dragged.gameObject);
 
-            // create merged placed weapon
-            var mergedPlaced = inventory.CreatePlacedWeaponFromPrefab(inventory.placedPrefab, weapon.nextLevelWeapon, pos, this);
-            // Update visual of slot if you use a highlight image
-            if (highlightImage != null) highlightImage.sprite = mergedPlaced.weaponData.icon;
-
-            return;
+            //var mergedPlaced = inventory.CreatePlacedWeaponFromPrefab(inventory.placedPrefab, weapon.nextLevelWeapon, pos, this);
+            //if (highlightImage != null) highlightImage.sprite = mergedPlaced.weaponData.icon;
+            //return;
         }
 
-        // 2) Try place into empty area
+        // 2) Place
         if (inventory.CanPlace(weapon, pos))
         {
-            // Move the dragged object into the slot and register it into the grid
-            // If the dragged object is already a PlacedWeapon (picked from grid), we re-place it.
             var placedComp = dragged.GetComponent<PlacedWeapon>();
             if (placedComp != null)
             {
-                // Place the same object (it was Unplaced at BeginDrag)
-                dragged.transform.SetParent(transform);
+                dragged.transform.SetParent(transform, false);
+                dragged.originalParent = transform;
                 dragged.transform.localPosition = Vector3.zero;
-
+                //Debug.Log("Placed existing dragged object.");
                 placedComp.weaponData = weapon;
                 placedComp.Place(inventory, pos, this);
-
-                // Set parentSlot so future drags know where to return if cancelled
                 dragged.parentSlot = this;
+                //dragged.transform.SetParent(inventory.placedWeaponsContainer);
+
             }
             else
             {
-                // If no PlacedWeapon component exists (unlikely because prefab should have it),
-                // create a placed object via inventory helper and destroy the dragged one.
+                //Debug.Log("_Placing new object from prefab.");
                 Destroy(dragged.gameObject);
                 var newPlaced = inventory.CreatePlacedWeaponFromPrefab(inventory.placedPrefab, weapon, pos, this);
                 if (highlightImage != null) highlightImage.sprite = newPlaced.weaponData.icon;
             }
-
             return;
         }
 
-        // 3) Invalid placement — reset back to origin slot (spawn or previous)
+        // 3) Reset
         if (dragged.parentSlot != null)
         {
-            dragged.transform.SetParent(dragged.parentSlot.transform);
+            //Debug.Log("Resetting dragged object to original slot.");
+            dragged.transform.SetParent(dragged.parentSlot.transform, false);
             dragged.transform.localPosition = Vector3.zero;
+            //dragged.transform.SetParent(dragged.originalParent, false);
+
         }
         else
         {
-            // fallback: destroy or hide
             Destroy(dragged.gameObject);
         }
     }
+
 
     // Optional helper for showing icon on the slot background
     public void SetSlotIcon(Sprite icon)

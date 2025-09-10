@@ -1,3 +1,4 @@
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -8,15 +9,19 @@ public class DraggableWeapon : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public WeaponSO weaponData;
     public InventorySlot parentSlot; // current slot (spawn slot or grid's origin slot)
 
-    private CanvasGroup canvasGroup;
-    private Transform originalParent;
-    private InventorySlot originalParentSlot;
+    [SerializeField] private RectTransform shapeContainer; // boş GameObject (RectTransform) slotları burda yaranacaq
+    [SerializeField] private Image shapePrefab; // sadə Image prefab (bir hüceyrəni göstərir)
+
+    public CanvasGroup canvasGroup;
+    public Transform originalParent;
+    public InventorySlot originalParentSlot;
     private Canvas canvas;
 
     private void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
         canvas = GetComponentInParent<Canvas>();
+        shapeContainer = GetComponent<RectTransform>();
     }
 
     // Initialize sprite and slot reference (used both for spawn and when creating placed item)
@@ -25,30 +30,58 @@ public class DraggableWeapon : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         weaponData = weapon;
         parentSlot = slot;
 
-        var img = GetComponent<Image>();
-        if (img != null)
+        // əvvəlkiləri sil
+        foreach (Transform child in shapeContainer)
+            Destroy(child.gameObject);
+
+        if (weapon == null) return;
+
+        // boşdursa ən azı (0,0)
+        List<Vector2Int> offsets = weapon.shapeOffsets != null && weapon.shapeOffsets.Count > 0
+            ? weapon.shapeOffsets
+            : new List<Vector2Int>() { Vector2Int.zero };
+
+        // prefab ölçüsü götür
+        Vector2 cellSize = GetComponent<RectTransform>().sizeDelta;
+        if (cellSize == Vector2.zero)
+            cellSize = new Vector2(64, 64); // fallback
+
+        // pivotlamaq üçün mərkəz tap → (0,0) həmişə ortada olsun
+        // yəni ekran koordinatları üçün ofset = - (0,0) * cellSize
+        Vector2 originOffset = new Vector2(0, 0);
+
+        foreach (Vector2Int offset in offsets)
         {
-            img.sprite = weapon != null ? weapon.icon : null;
-            img.enabled = weapon != null;
-            //img.SetNativeSize();
+            Image cell = Instantiate(shapePrefab, shapeContainer);
+            cell.sprite = weapon.icon;
+            cell.enabled = true;
+
+            RectTransform rt = cell.GetComponent<RectTransform>();
+            rt.sizeDelta = cellSize;
+            rt.anchoredPosition = new Vector2(offset.x * cellSize.x, offset.y * cellSize.y) + originOffset;
+
+            // Proxy əlavə et
+            if (cell.GetComponent<DragProxy>() == null)
+                cell.gameObject.AddComponent<DragProxy>();
+
         }
+        originalParent = transform.parent;
     }
+
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (weaponData == null) return;
 
-        originalParent = transform.parent;
+        //originalParent = transform.parent;
         originalParentSlot = parentSlot;
 
-        // If this GameObject is a placed object, unplace it so cells become free while dragging
         var placed = GetComponent<PlacedWeapon>();
         if (placed != null && placed.IsPlaced)
         {
             placed.Unplace();
         }
 
-        // Move to top-level canvas while dragging (so it renders over everything)
         if (canvas != null)
             transform.SetParent(canvas.transform);
 
@@ -63,13 +96,17 @@ public class DraggableWeapon : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        // OnDrop (if successful) will change parent; if still parented to canvas, return to original
         if (transform.parent == canvas.transform)
         {
             transform.SetParent(originalParent);
             transform.localPosition = Vector3.zero;
             parentSlot = originalParentSlot;
+
+            //Debug.Log("Resetting dragged object to original slot.");
         }
+        transform.SetParent(parentSlot.inventory.placedWeaponsContainer);
+
+        //Debug.Log("OnEndDrag: " + (parentSlot != null ? parentSlot.name : "no slot"));
 
         canvasGroup.blocksRaycasts = true;
     }

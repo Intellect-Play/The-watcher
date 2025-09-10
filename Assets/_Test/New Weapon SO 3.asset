@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: New Weapon SO 3
   m_EditorClassIdentifier: 
   weaponName: v
-  icon: {fileID: 21300000, guid: 925280a7f1a787440b400565695855eb, type: 3}
+  icon: {fileID: 21300000, guid: 1014854f3989a9246a85a3b0ba434b5a, type: 3}
   level: 0
   nextLevelWeapon: {fileID: 0}
   size: {x: 1, y: 1}
