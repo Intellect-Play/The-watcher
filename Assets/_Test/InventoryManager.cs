@@ -8,7 +8,9 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] private GridInventory gridInventory;
 
     [Header("Slots")]
+    [Tooltip("Grid slots in row-major order (x=0..width-1, y=0..height-1)")]
     [SerializeField] private List<InventorySlot> gridSlots = new List<InventorySlot>();
+
     [SerializeField] private List<InventorySlot> spawnSlots = new List<InventorySlot>();
 
     [Header("Weapons")]
@@ -16,49 +18,68 @@ public class InventoryManager : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private Button spawnButton;
-    [SerializeField] private GameObject draggablePrefab;
+    [SerializeField] private GameObject draggablePrefab; // prefab that contains Image + CanvasGroup + DraggableWeapon + PlacedWeapon
 
     private void Awake()
     {
-        // Auto-assign grid positions based on index
+        if (gridInventory == null)
+        {
+            Debug.LogError("GridInventory reference required.");
+            return;
+        }
+
+        // tell gridInventory which prefab to use for placed items
+        gridInventory.placedPrefab = draggablePrefab;
+
+        // auto-assign grid positions
         for (int i = 0; i < gridSlots.Count; i++)
         {
             int x = i % gridInventory.width;
             int y = i / gridInventory.width;
-
             gridSlots[i].gridPosition = new Vector2Int(x, y);
             gridSlots[i].inventory = gridInventory;
         }
 
-        // Link spawn slots as well
-        foreach (var slot in spawnSlots)
-        {
-            slot.inventory = gridInventory;
-        }
+        // ensure spawn slots know inventory reference (useful for reset)
+        foreach (var s in spawnSlots) s.inventory = gridInventory;
     }
 
     private void Start()
     {
-        spawnButton.onClick.AddListener(SpawnWeapons);
+        if (spawnButton != null) spawnButton.onClick.AddListener(SpawnWeapons);
         SpawnWeapons();
     }
 
-    private void SpawnWeapons()
+    public void SpawnWeapons()
     {
         foreach (var slot in spawnSlots)
         {
-            foreach (Transform child in slot.transform)
-                Destroy(child.gameObject);
+            // Clear existing children
+            foreach (Transform c in slot.transform) Destroy(c.gameObject);
 
+            // pick random
             WeaponSO randomWeapon = availableWeapons[Random.Range(0, availableWeapons.Count)];
-            slot.SetWeapon(randomWeapon);
 
-            if (randomWeapon != null)
+            // instantiate draggable prefab under the spawn slot
+            var go = Instantiate(draggablePrefab, slot.transform);
+            go.transform.localPosition = Vector3.zero;
+
+            var drag = go.GetComponent<DraggableWeapon>();
+            var placed = go.GetComponent<PlacedWeapon>();
+
+            if (drag == null || placed == null)
             {
-                var go = Instantiate(draggablePrefab, slot.transform);
-                var drag = go.GetComponent<DraggableWeapon>();
-                drag.Init(randomWeapon, slot);
+                Debug.LogError("draggablePrefab must have DraggableWeapon and PlacedWeapon components.");
+                Destroy(go);
+                continue;
             }
+
+            // init both: this object is a spawn copy (not placed)
+            drag.Init(randomWeapon, slot);
+            placed.InitAsSpawn(randomWeapon);
+
+            // optionally set slot icon
+            slot.SetSlotIcon(randomWeapon != null ? randomWeapon.icon : null);
         }
     }
 }
