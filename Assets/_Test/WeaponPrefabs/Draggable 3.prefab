@@ -61,7 +61,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -103,10 +103,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponData: {fileID: 11400000, guid: 1d665f7b2a73b4d4a9e231291ac1d847, type: 2}
+  placedWeapon: {fileID: 0}
   parentSlot: {fileID: 0}
   shapeContainer: {fileID: 0}
   shapePrefab: {fileID: 8971135152096853251, guid: f557e58cbe1c8d3458ea469521ac7a98,
     type: 3}
+  canvasGroup: {fileID: 0}
+  originalParent: {fileID: 0}
+  originalParentSlot: {fileID: 0}
 --- !u!114 &8678293697464437297
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,4 +124,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponData: {fileID: 0}
+  draggableWeapon: {fileID: 0}
   origin: {x: -1, y: -1}
+  WeaponLevel: 0
