@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,11 +9,11 @@ public class GridInventory : MonoBehaviour
     public int height = 5;
 
     // cell -> PlacedWeapon occupying it (or null)
-    private PlacedWeapon[,] grid;
+    public PlacedWeapon[,] grid;
 
     // prefab used for creating placed result (set by InventoryManager on Awake)
     [HideInInspector] public GameObject placedPrefab;
-    public Transform placedWeaponsContainer; // bütün weapon-lar burada toplanacaq
+    public Transform placedWeaponsContainer; // bÃ¼tÃ¼n weapon-lar burada toplanacaq
     string line = "";
 
     private void Awake()
@@ -69,6 +69,7 @@ public class GridInventory : MonoBehaviour
             int y = pos.y + offset.y;
             grid[x, y] = placed;
         }
+        RandomWeaponSpawner.instance.ActivatesWeapons();
     }
 
     // Remove references to this PlacedWeapon in grid cells
@@ -78,6 +79,8 @@ public class GridInventory : MonoBehaviour
         for (int x = 0; x < height; x++)
             for (int y = 0; y < width; y++)
                 if (grid[x, y] == placed) grid[x, y] = null;
+        RandomWeaponSpawner.instance.ActivatesWeapons();
+
     }
 
     public PlacedWeapon GetPlacedAt(int x, int y)
@@ -98,7 +101,8 @@ public class GridInventory : MonoBehaviour
             if (!InBounds(x, y)) return false;
             var p = grid[x, y];
             //Debug.Log($" - cell {x},{y} has " + (p != null ? p.weaponData.name : "null"));
-            if (p == null || p.weaponData != weapon.weaponData || p.WeaponLevel != weapon.WeaponLevel) return false;
+            //if (p == null || p.weaponData != weapon.weaponData || p.WeaponLevel != weapon.WeaponLevel) return false;
+            if (p == null || p.weaponData != weapon.weaponData) return false;
             //Debug.Log($"Checking cell {x},{y} for merge, found: " + p.WeaponLevel + " " + weapon.WeaponLevel);
 
             placedOut.Add(p);
@@ -127,9 +131,12 @@ public class GridInventory : MonoBehaviour
         }
 
         // initialize visuals and state
-        draggable.Init(weapon, slot);
+        draggable.Init(weapon, slot, InventoryManager.instance.placedWeaponsContainer);
         placed.weaponData = weapon;
         placed.Place(slot);
         return placed;
     }
+
+  
+
 }

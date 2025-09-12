@@ -17,22 +17,21 @@ public class DraggableWeapon : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public CanvasGroup canvasGroup;
     public Transform originalParent;
     public InventorySlot originalParentSlot;
-    private Canvas canvas;
-    DraggableWeapon lastTouched;
+    public Transform canvas;
     private void Awake()
     {
         placedWeapon = GetComponent<PlacedWeapon>();
         canvasGroup = GetComponent<CanvasGroup>();
-        canvas = GetComponentInParent<Canvas>();
+        //canvas = GetComponentInParent<Canvas>();
         shapeContainer = GetComponent<RectTransform>();
     }
 
     // Initialize sprite and slot reference (used both for spawn and when creating placed item)
-    public void Init(WeaponSO weapon, InventorySlot slot)
+    public void Init(WeaponSO weapon, InventorySlot slot, Transform conteiner)
     {
         weaponData = weapon;
         parentSlot = slot;
-
+        canvas = conteiner;
         // əvvəlkiləri sil
         foreach (Transform child in shapeContainer)
             Destroy(child.gameObject);
@@ -82,11 +81,6 @@ public class DraggableWeapon : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         var placed = GetComponent<PlacedWeapon>();
         if (placed != null && placed.IsPlaced)
         {
-            //if (placedWeapon.inventory != null)
-            //{
-            //    placedWeapon.inventory.RemovePlacedWeapon(placedWeapon);
-            //    //placedWeapon.inventory = null;
-            //}
             placed.Unplace();
         }
 
@@ -107,7 +101,7 @@ public class DraggableWeapon : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void OnEndDrag(PointerEventData eventData)
     {
         InventoryManager.instance.ActiveWeaponsRay(true); 
-        if (transform.parent == canvas.transform) 
+        if (transform.parent == canvas) 
         { 
             transform.SetParent(originalParent); 
             transform.localPosition = Vector3.zero; 

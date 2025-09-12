@@ -6,32 +6,32 @@ using UnityEngine.UI;
 public class InventorySlot : MonoBehaviour, IDropHandler
 {
     public Vector2Int gridPosition; // auto assigned by InventoryManager
-    [HideInInspector] public GridInventory inventory;
+    public GridInventory inventory;
 
     [SerializeField] private Image highlightImage; // optional, for icon or highlight
-
     // On drop we either place, merge, or reset dragged back to its original slot
     public void OnDrop(PointerEventData eventData)
 {
     var dragged = eventData.pointerDrag != null ? eventData.pointerDrag.GetComponent<DraggableWeapon>() : null;
     //Debug.Log("OnDrop event received. +"+ eventData.pointerDrag.name);
         if (dragged == null || dragged.weaponData == null || inventory == null) return;
-    //Debug.Log($"OnDrop called on slot {gridPosition} with weapon {dragged.weaponData.name}");
-    WeaponSO weapon = dragged.placedWeapon.weaponData;
+        //Debug.Log($"OnDrop called on slot {gridPosition} with weapon {dragged.weaponData.name}");
+        WeaponSO weapon = dragged.placedWeapon.weaponData;
     Vector2Int pos = gridPosition;
 
         // 1) Merge
         if ( inventory.CanMergeAt(dragged.placedWeapon, pos, out List<PlacedWeapon> placedList))
         {
+            int level=0;
             //Debug.Log("Merging weapons into next level: " );
             foreach (var p in placedList)
             {
                 p.Unplace();
                 InventoryManager.instance.RemoveDraggable(p.GetComponent<DraggableWeapon>());
-
+                level = p.WeaponLevel;
                 Destroy(p.gameObject);
             }
-            dragged.placedWeapon.Merge();
+            dragged.placedWeapon.Merge(level);
             //Destroy(dragged.gameObject);
             dragged.placedWeapon.Place(this);
             dragged.parentSlot = this;

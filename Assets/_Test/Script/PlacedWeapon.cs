@@ -30,9 +30,9 @@ public class PlacedWeapon : MonoBehaviour
         originSlot = null;
         WeaponLevel = weapon.levelWeapon;
     }
-    public void Merge()
+    public void Merge(int level)
     {
-        ++WeaponLevel;
+        WeaponLevel+=level;
         foreach (var drag in ChildDrags)
         {
             drag.LevelUpgrade(WeaponLevel);

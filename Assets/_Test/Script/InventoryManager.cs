@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,11 +6,12 @@ public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager instance;
     [Header("Grid")]
-    [SerializeField] private GridInventory gridInventory;
+    [SerializeField] public GridInventory gridInventory;
 
     [Header("Slots")]
     [Tooltip("Grid slots in row-major order (x=0..width-1, y=0..height-1)")]
     [SerializeField] private List<InventorySlot> gridSlots = new List<InventorySlot>();
+    [SerializeField] private List<InventorySlot> gridSlotsForWeapons = new List<InventorySlot>();
 
     [SerializeField] private List<InventorySlot> spawnSlots = new List<InventorySlot>();
 
@@ -23,7 +24,8 @@ public class InventoryManager : MonoBehaviour
 
     public List<DraggableWeapon> AllWeapons = new List<DraggableWeapon>();
 
-
+    public List<StaticWeapon> staticWeapons = new List<StaticWeapon>();
+    public Transform placedWeaponsContainer; // bütün weapon-lar burada toplanacaq
     private void Awake()
     {
         if (instance == null) instance = this;
@@ -48,6 +50,7 @@ public class InventoryManager : MonoBehaviour
             int y = i / gridInventory.width;
             gridSlots[i].gridPosition = new Vector2Int(x, y);
             gridSlots[i].inventory = gridInventory;
+            gridSlotsForWeapons.Add(gridSlots[i]);
         }
 
         // ensure spawn slots know inventory reference (useful for reset)
@@ -116,11 +119,45 @@ public class InventoryManager : MonoBehaviour
             }
             WeaponSO weaponData = drag.weaponData;
             // init both: this object is a spawn copy (not placed)
-            drag.Init(go.GetComponent<DraggableWeapon>().weaponData, slot);
+            drag.Init(go.GetComponent<DraggableWeapon>().weaponData, slot, placedWeaponsContainer);
             placed.InitAsSpawn(go.GetComponent<DraggableWeapon>().weaponData);
 
             // optionally set slot icon
             slot.SetSlotIcon(randomWeapon != null ? weaponData.icon : null);
         }
+    }
+
+
+    public void RegisterStaticWeapon(StaticWeapon sw)
+    {
+        if (!staticWeapons.Contains(sw))
+            staticWeapons.Add(sw);
+    }
+
+    public StaticWeapon GetWeaponAt(Vector2Int pos)
+    {
+        foreach (var sw in staticWeapons)
+        {
+            if (sw.gridPosition == pos)
+                return sw;
+        }
+        return null;
+    }
+
+    public InventorySlot GetRandomEmptyCell()
+    {
+        InventorySlot emptyCells;
+
+        if(gridSlotsForWeapons.Count == 0) return null; // boş yer yoxdursa
+
+        emptyCells = gridSlotsForWeapons[Random.Range(0, gridSlotsForWeapons.Count - 1)];
+        gridSlotsForWeapons.Remove(emptyCells);
+        return emptyCells;
+    }
+    public void ResetgridSlotForWeapons()
+    {
+        gridSlotsForWeapons.Clear();
+        foreach (var slot in gridSlots)
+            gridSlotsForWeapons.Add(slot);
     }
 }
